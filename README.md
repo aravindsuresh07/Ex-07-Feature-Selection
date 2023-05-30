@@ -1,22 +1,32 @@
-# Ex-07-Feature-Selection
-## AIM
-To Perform the various feature selection techniques on a dataset and save the data to a file. 
 
-# Explanation
-Feature selection is to find the best set of features that allows one to build useful models.
-Selecting the best features helps the model to perform well. 
+Developed By: Aravind S
+Reg.No: 212220220004
 
-# ALGORITHM
-### STEP 1
-Read the given Data
-### STEP 2
-Clean the Data Set using Data Cleaning Process
-### STEP 3
-Apply Feature selection techniques to all the features of the data set
-### STEP 4
-Save the data to the file
+# PROGRAM FOR TITANIC
 
 
-# CODE
-
-# OUPUT
+import pandas as pd
+import numpy as np
+df = pd.read_csv("titanic_dataset.csv")
+df
+df.isnull().sum()
+from sklearn.preprocessing import LabelEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+df.drop(['PassengerId', 'Name', 'Ticket', 'Cabin'], axis=1, inplace=True)
+le = LabelEncoder()
+df['Sex'] = le.fit_transform(df['Sex'])
+df['Embarked'] = le.fit_transform(df['Embarked'].astype(str))
+imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+df[['Age']] = imputer.fit_transform(df[['Age']])
+print("Feature selection")
+X = df.iloc[:, :-1]
+y = df.iloc[:, -1]
+selector = SelectKBest(chi2, k=3)
+X_new = selector.fit_transform(X, y)
+print(X_new)
+df_new = pd.DataFrame(X_new, columns=['Pclass', 'Age', 'Fare'])
+df_new['Survived'] = y.values
+df_new.to_csv('titanic_transformed.csv', index=False)
+print(df_new)
